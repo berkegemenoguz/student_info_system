@@ -204,6 +204,8 @@ public class UniversityAutomationApp extends JFrame {
             }
             dataStore.addUser(new User(username, password, role, fullName, refId));
             refreshUserTable(model);
+            refreshRoleCombo(studentUserCombo, "Student");
+            refreshRoleCombo(instructorCombo, "Instructor");
             tfUsername.setText(""); tfPassword.setText(""); tfFullName.setText(""); tfRefId.setText("");
             JOptionPane.showMessageDialog(this, "User added successfully.");
         });
@@ -222,6 +224,8 @@ public class UniversityAutomationApp extends JFrame {
             if (confirm == JOptionPane.YES_OPTION) {
                 dataStore.removeUser(username);
                 refreshUserTable(model);
+                refreshRoleCombo(studentUserCombo, "Student");
+                refreshRoleCombo(instructorCombo, "Instructor");
             }
         });
 
