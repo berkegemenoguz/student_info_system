@@ -20,7 +20,7 @@ public class UniversityAutomationApp extends JFrame {
         dataStore = new DataStore();
         setTitle("University Automation System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(950, 650);
+        setSize(750, 500);
         setLocationRelativeTo(null);
         showLoginPanel();
         setVisible(true);
@@ -225,12 +225,14 @@ public class UniversityAutomationApp extends JFrame {
             }
         });
 
-        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        southPanel.add(deleteBtn);
+        JPanel topWrapper = new JPanel(new BorderLayout());
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        btnPanel.add(deleteBtn);
+        topWrapper.add(formPanel, BorderLayout.CENTER);
+        topWrapper.add(btnPanel, BorderLayout.SOUTH);
 
-        panel.add(formPanel, BorderLayout.NORTH);
+        panel.add(topWrapper, BorderLayout.NORTH);
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        panel.add(southPanel, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -355,12 +357,14 @@ public class UniversityAutomationApp extends JFrame {
             }
         });
 
-        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        southPanel.add(deleteStudentBtn);
+        JPanel topWrapper = new JPanel(new BorderLayout());
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        btnPanel.add(deleteStudentBtn);
+        topWrapper.add(formPanel, BorderLayout.CENTER);
+        topWrapper.add(btnPanel, BorderLayout.SOUTH);
 
-        panel.add(formPanel, BorderLayout.NORTH);
+        panel.add(topWrapper, BorderLayout.NORTH);
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        panel.add(southPanel, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -468,12 +472,14 @@ public class UniversityAutomationApp extends JFrame {
             }
         });
 
-        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        southPanel.add(deleteCourseBtn);
+        JPanel topWrapper = new JPanel(new BorderLayout());
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        btnPanel.add(deleteCourseBtn);
+        topWrapper.add(formPanel, BorderLayout.CENTER);
+        topWrapper.add(btnPanel, BorderLayout.SOUTH);
 
-        panel.add(formPanel, BorderLayout.NORTH);
+        panel.add(topWrapper, BorderLayout.NORTH);
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        panel.add(southPanel, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -762,11 +768,11 @@ public class UniversityAutomationApp extends JFrame {
             }
         });
 
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        bottomPanel.add(enrollBtn);
+        JPanel topBtnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        topBtnPanel.add(enrollBtn);
 
+        panel.add(topBtnPanel, BorderLayout.NORTH);
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        panel.add(bottomPanel, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -805,11 +811,11 @@ public class UniversityAutomationApp extends JFrame {
             }
         });
 
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        bottomPanel.add(dropBtn);
+        JPanel topBtnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        topBtnPanel.add(dropBtn);
 
+        panel.add(topBtnPanel, BorderLayout.NORTH);
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        panel.add(bottomPanel, BorderLayout.SOUTH);
         return panel;
     }
 
@@ -844,14 +850,14 @@ public class UniversityAutomationApp extends JFrame {
         JButton refreshBtn = new JButton("Refresh");
         refreshBtn.addActionListener(e -> refreshTranscript.run());
 
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.add(gpaLabel, BorderLayout.WEST);
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(gpaLabel, BorderLayout.WEST);
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnPanel.add(refreshBtn);
-        bottomPanel.add(btnPanel, BorderLayout.EAST);
+        topPanel.add(btnPanel, BorderLayout.EAST);
 
+        panel.add(topPanel, BorderLayout.NORTH);
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
-        panel.add(bottomPanel, BorderLayout.SOUTH);
         return panel;
     }
 }
