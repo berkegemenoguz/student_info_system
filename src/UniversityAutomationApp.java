@@ -55,7 +55,7 @@ public class UniversityAutomationApp extends JFrame {
 
         BufferedImage bgImage;
         try {
-            bgImage = ImageIO.read(getClass().getResource("/arelbg.png"));
+            bgImage = ImageIO.read(getClass().getResource("/arelbackground.png"));
         } catch (IOException ex) {
             bgImage = null;
         }
@@ -73,7 +73,7 @@ public class UniversityAutomationApp extends JFrame {
 
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setOpaque(true);
-        formPanel.setBackground(new Color(255, 255, 255, 200));
+        formPanel.setBackground(Color.WHITE);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 15, 10, 15);
