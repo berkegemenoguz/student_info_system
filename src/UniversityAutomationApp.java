@@ -4,6 +4,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.IOException;
 import java.util.List;
 
 public class UniversityAutomationApp extends JFrame {
@@ -50,34 +53,63 @@ public class UniversityAutomationApp extends JFrame {
         currentUser = null;
         getContentPane().removeAll();
 
-        JPanel panel = new JPanel(new GridBagLayout());
+        BufferedImage bgImage;
+        try {
+            bgImage = ImageIO.read(getClass().getResource("/arelbg.png"));
+        } catch (IOException ex) {
+            bgImage = null;
+        }
+        final BufferedImage finalBg = bgImage;
+
+        JPanel backgroundPanel = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (finalBg != null) {
+                    g.drawImage(finalBg, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setOpaque(true);
+        formPanel.setBackground(new Color(255, 255, 255, 200));
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.insets = new Insets(10, 15, 10, 15);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel titleLabel = new JLabel("University Automation System", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
+        titleLabel.setForeground(new Color(33, 37, 41));
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-        panel.add(titleLabel, gbc);
+        formPanel.add(titleLabel, gbc);
 
         gbc.gridwidth = 1;
         gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(new JLabel("Username:"), gbc);
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setForeground(new Color(33, 37, 41));
+        formPanel.add(usernameLabel, gbc);
         JTextField usernameField = new JTextField(15);
         gbc.gridx = 1;
-        panel.add(usernameField, gbc);
+        formPanel.add(usernameField, gbc);
 
         gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(new JLabel("Password:"), gbc);
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setForeground(new Color(33, 37, 41));
+        formPanel.add(passwordLabel, gbc);
         JPasswordField passwordField = new JPasswordField(15);
         gbc.gridx = 1;
-        panel.add(passwordField, gbc);
+        formPanel.add(passwordField, gbc);
 
         JButton loginBtn = new JButton("Login");
+        loginBtn.setBackground(new Color(0, 123, 255));
+        loginBtn.setForeground(Color.WHITE);
+        loginBtn.setFocusPainted(false);
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
-        panel.add(loginBtn, gbc);
+        formPanel.add(loginBtn, gbc);
 
         ActionListener loginAction = e -> {
             String username = usernameField.getText().trim();
@@ -97,7 +129,8 @@ public class UniversityAutomationApp extends JFrame {
         loginBtn.addActionListener(loginAction);
         passwordField.addActionListener(loginAction);
 
-        getContentPane().add(panel);
+        backgroundPanel.add(formPanel);
+        getContentPane().add(backgroundPanel);
         revalidate();
         repaint();
     }
