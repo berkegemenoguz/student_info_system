@@ -141,7 +141,7 @@ public class UniversityAutomationApp extends JFrame {
         getContentPane().removeAll();
 
         JPanel topPanel = new JPanel(new BorderLayout());
-        JLabel welcomeLabel = new JLabel("  Welcome, " + currentUser.getFullName() + " [" + currentUser.getRole() + "]");
+        JLabel welcomeLabel = new JLabel(  currentUser.getFullName() );
         welcomeLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         topPanel.add(welcomeLabel, BorderLayout.WEST);
 
