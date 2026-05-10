@@ -35,11 +35,11 @@ public class GradeRecord implements Persistable {
         if (avg >= 90) return "AA";
         if (avg >= 85) return "BA";
         if (avg >= 80) return "BB";
-        if (avg >= 75) return "CB";
-        if (avg >= 70) return "CC";
-        if (avg >= 65) return "DC";
-        if (avg >= 60) return "DD";
-        if (avg >= 50) return "FD";
+        if (avg >= 70) return "CB";
+        if (avg >= 60) return "CC";
+        if (avg >= 50) return "DC";
+        if (avg >= 40) return "DD";
+        if (avg >= 30) return "FD";
         return "FF";
     }
 

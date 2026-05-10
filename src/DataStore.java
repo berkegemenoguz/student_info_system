@@ -37,7 +37,7 @@ public class DataStore {
         loadEnrollments();
         loadGrades();
         if (users.isEmpty()) {
-            users.add(new User("admin", "admin123", "Admin", "System Administrator", ""));
+            users.add(new User("admin", "admin", "Admin", "Administrator", ""));
             saveUsers();
         }
     }
