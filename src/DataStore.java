@@ -27,6 +27,7 @@ public class DataStore {
     }
 
     public void initialize() {
+        new File(DATA_DIR).mkdirs();
         users = new ArrayList<>();
         students = new ArrayList<>();
         courses = new ArrayList<>();
@@ -258,15 +259,17 @@ public class DataStore {
     // ---- File I/O ----
 
     // Uses the Persistable-typed saveToFile — Reusability in action
-    public void saveUsers()       { saveToFile("users.txt",       users); }
-    public void saveStudents()    { saveToFile("students.txt",    students); }
-    public void saveCourses()     { saveToFile("courses.txt",     courses); }
-    public void saveEnrollments() { saveToFile("enrollments.txt", enrollments); }
-    public void saveGrades()      { saveToFile("grades.txt",      grades); }
-    public void saveClassrooms()  { saveToFile("classrooms.txt",  classrooms); }
+    private static final String DATA_DIR = "data" + File.separator;
+
+    public void saveUsers()       { saveToFile(DATA_DIR + "users.txt",       users); }
+    public void saveStudents()    { saveToFile(DATA_DIR + "students.txt",    students); }
+    public void saveCourses()     { saveToFile(DATA_DIR + "courses.txt",     courses); }
+    public void saveEnrollments() { saveToFile(DATA_DIR + "enrollments.txt", enrollments); }
+    public void saveGrades()      { saveToFile(DATA_DIR + "grades.txt",      grades); }
+    public void saveClassrooms()  { saveToFile(DATA_DIR + "classrooms.txt",  classrooms); }
 
     public void saveClassroomAssignments() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("classrooms.txt"))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_DIR + "classrooms.txt"))) {
             for (Classroom cl : classrooms) {
                 String assignedCourse = "";
                 for (Course c : courses) {
@@ -284,22 +287,22 @@ public class DataStore {
     }
 
     public void loadUsers() {
-        users = loadFromFile("users.txt", User::fromFileString);
+        users = loadFromFile(DATA_DIR + "users.txt", User::fromFileString);
     }
     public void loadStudents() {
-        students = loadFromFile("students.txt", StudentProfile::fromFileString);
+        students = loadFromFile(DATA_DIR + "students.txt", StudentProfile::fromFileString);
     }
     public void loadCourses() {
-        courses = loadFromFile("courses.txt", Course::fromFileString);
+        courses = loadFromFile(DATA_DIR + "courses.txt", Course::fromFileString);
     }
     public void loadEnrollments() {
-        enrollments = loadFromFile("enrollments.txt", Enrollment::fromFileString);
+        enrollments = loadFromFile(DATA_DIR + "enrollments.txt", Enrollment::fromFileString);
     }
     public void loadGrades() {
-        grades = loadFromFile("grades.txt", GradeRecord::fromFileString);
+        grades = loadFromFile(DATA_DIR + "grades.txt", GradeRecord::fromFileString);
     }
     public void loadClassrooms() {
-        classrooms = loadFromFile("classrooms.txt", Classroom::fromFileString);
+        classrooms = loadFromFile(DATA_DIR + "classrooms.txt", Classroom::fromFileString);
     }
 
     /**
