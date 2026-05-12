@@ -103,6 +103,8 @@ public class UniversityAutomationApp extends JFrame {
         formPanel.add(passwordField, gbc);
 
         JButton loginBtn = new JButton("Login");
+        loginBtn.setOpaque(true);
+        loginBtn.setBorderPainted(false);
         loginBtn.setBackground(new Color(0, 123, 255));
         loginBtn.setForeground(Color.WHITE);
         loginBtn.setFocusPainted(false);
