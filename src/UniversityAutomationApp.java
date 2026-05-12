@@ -158,6 +158,7 @@ public class UniversityAutomationApp extends JFrame {
                 tabbedPane.addTab("Manage Users", createUserPanel());
                 tabbedPane.addTab("Manage Students", createStudentsPanel());
                 tabbedPane.addTab("Manage Courses", createCoursesPanel());
+                tabbedPane.addTab("Manage Classrooms", createClassroomsPanel());
                 tabbedPane.addTab("Reports", createReportsPanel());
                 break;
             case "Instructor":
@@ -477,7 +478,7 @@ public class UniversityAutomationApp extends JFrame {
             }
             int credit, quota;
             try {
-                credit = ValidationUtils.parsePositiveInt(creditStr);  // ValidationUtils — Method Abstraction
+                credit = ValidationUtils.parsePositiveInt(creditStr);
                 quota  = ValidationUtils.parsePositiveInt(quotaStr);
             } catch (IllegalArgumentException ex) {
                 showError("Credit and quota must be positive numbers.");
@@ -526,6 +527,105 @@ public class UniversityAutomationApp extends JFrame {
         for (Course c : dataStore.getCourses()) {
             model.addRow(new Object[]{c.getCourseCode(), c.getCourseName(), c.getCredit(), c.getQuota(), c.getInstructorUsername()});
         }
+    }
+
+    public JPanel createClassroomsPanel() {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setBorder(BorderFactory.createTitledBorder("Classrooms & Course Assignment"));
+
+        String[] columns = {"Room ID", "Room Name", "Capacity", "Assigned Course"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            public boolean isCellEditable(int row, int col) { return false; }
+        };
+        JTable table = new JTable(model);
+
+        Runnable refreshClassroomTable = () -> {
+            model.setRowCount(0);
+            for (Classroom cl : dataStore.getClassrooms()) {
+                String assignedCourse = "";
+                for (Course c : dataStore.getCourses()) {
+                    if (cl.getRoomId().equals(c.getClassroomId())) {
+                        assignedCourse = c.getCourseCode() + " - " + c.getCourseName();
+                        break;
+                    }
+                }
+                model.addRow(new Object[]{cl.getRoomId(), cl.getRoomName(), cl.getCapacity(), assignedCourse});
+            }
+        };
+        refreshClassroomTable.run();
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        JButton assignBtn = new JButton("Assign Course to Selected Classroom");
+        assignBtn.addActionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row < 0) { showError("Please select a classroom first."); return; }
+            String roomId = (String) model.getValueAt(row, 0);
+
+            JComboBox<String> courseCombo = new JComboBox<>();
+            courseCombo.addItem("(None)");
+            for (Course c : dataStore.getCourses()) {
+                courseCombo.addItem(c.getCourseCode() + " - " + c.getCourseName());
+            }
+
+            for (Course c : dataStore.getCourses()) {
+                if (roomId.equals(c.getClassroomId())) {
+                    for (int i = 1; i < courseCombo.getItemCount(); i++) {
+                        if (courseCombo.getItemAt(i).startsWith(c.getCourseCode() + " - ")) {
+                            courseCombo.setSelectedIndex(i);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            int result = JOptionPane.showConfirmDialog(this, courseCombo,
+                "Assign Course to " + model.getValueAt(row, 1), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String selected = (String) courseCombo.getSelectedItem();
+
+                for (Course c : dataStore.getCourses()) {
+                    if (roomId.equals(c.getClassroomId())) {
+                        dataStore.assignClassroomToCourse(c.getCourseCode(), "");
+                    }
+                }
+
+                if (selected != null && !selected.equals("(None)")) {
+                    String courseCode = selected.split(" - ")[0];
+                    dataStore.assignClassroomToCourse(courseCode, roomId);
+                }
+                dataStore.saveClassroomAssignments();
+                refreshClassroomTable.run();
+                JOptionPane.showMessageDialog(this, "Course assigned successfully.");
+            }
+        });
+
+        JButton removeBtn = new JButton("Remove Assignment");
+        removeBtn.addActionListener(e -> {
+            int row = table.getSelectedRow();
+            if (row < 0) { showError("Please select a classroom first."); return; }
+            String roomId = (String) model.getValueAt(row, 0);
+            String assigned = (String) model.getValueAt(row, 3);
+            if (assigned.isEmpty()) { showError("This classroom has no assigned course."); return; }
+
+            for (Course c : dataStore.getCourses()) {
+                if (roomId.equals(c.getClassroomId())) {
+                    dataStore.assignClassroomToCourse(c.getCourseCode(), "");
+                    break;
+                }
+            }
+            dataStore.saveClassroomAssignments();
+            refreshClassroomTable.run();
+            JOptionPane.showMessageDialog(this, "Assignment removed.");
+        });
+
+        btnPanel.add(assignBtn);
+        btnPanel.add(removeBtn);
+
+        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+        panel.add(btnPanel, BorderLayout.SOUTH);
+        return panel;
     }
 
     public JPanel createReportsPanel() {

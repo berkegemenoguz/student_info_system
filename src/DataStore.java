@@ -7,6 +7,7 @@ public class DataStore {
     private List<Course> courses;
     private List<Enrollment> enrollments;
     private List<GradeRecord> grades;
+    private List<Classroom> classrooms;
 
     private static final Map<String, Double> GPA_MAP = new LinkedHashMap<>();
     static {
@@ -31,14 +32,29 @@ public class DataStore {
         courses = new ArrayList<>();
         enrollments = new ArrayList<>();
         grades = new ArrayList<>();
+        classrooms = new ArrayList<>();
         loadUsers();
         loadStudents();
         loadCourses();
         loadEnrollments();
         loadGrades();
+        loadClassrooms();
         if (users.isEmpty()) {
             users.add(new User("admin", "admin", "Admin", "Administrator", ""));
             saveUsers();
+        }
+        if (classrooms.isEmpty()) {
+            classrooms.add(new Classroom("140", "Derslik 140", 40));
+            classrooms.add(new Classroom("141", "Derslik 141", 40));
+            classrooms.add(new Classroom("142", "Derslik 142", 60));
+            classrooms.add(new Classroom("143", "Derslik 143", 60));
+            classrooms.add(new Classroom("144", "Derslik 144", 80));
+            classrooms.add(new Classroom("145", "Derslik 145", 80));
+            classrooms.add(new Classroom("146", "Derslik 146", 30));
+            classrooms.add(new Classroom("147", "Derslik 147", 30));
+            classrooms.add(new Classroom("148", "Derslik 148", 150));
+            classrooms.add(new Classroom("149", "Derslik 149", 200));
+            saveClassrooms();
         }
     }
 
@@ -222,6 +238,22 @@ public class DataStore {
     public List<Course> getCourses() { return courses; }
     public List<Enrollment> getEnrollments() { return enrollments; }
     public List<GradeRecord> getGrades() { return grades; }
+    public List<Classroom> getClassrooms() { return classrooms; }
+
+    public Classroom findClassroomById(String roomId) {
+        for (Classroom cl : classrooms) {
+            if (cl.getRoomId().equals(roomId)) return cl;
+        }
+        return null;
+    }
+
+    public void assignClassroomToCourse(String courseCode, String classroomId) {
+        Course c = findCourseByCode(courseCode);
+        if (c != null) {
+            c.setClassroomId(classroomId);
+            saveCourses();
+        }
+    }
 
     // ---- File I/O ----
 
@@ -231,6 +263,25 @@ public class DataStore {
     public void saveCourses()     { saveToFile("courses.txt",     courses); }
     public void saveEnrollments() { saveToFile("enrollments.txt", enrollments); }
     public void saveGrades()      { saveToFile("grades.txt",      grades); }
+    public void saveClassrooms()  { saveToFile("classrooms.txt",  classrooms); }
+
+    public void saveClassroomAssignments() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("classrooms.txt"))) {
+            for (Classroom cl : classrooms) {
+                String assignedCourse = "";
+                for (Course c : courses) {
+                    if (cl.getRoomId().equals(c.getClassroomId())) {
+                        assignedCourse = c.getCourseCode() + " - " + c.getCourseName();
+                        break;
+                    }
+                }
+                writer.write(cl.getRoomId() + "|" + cl.getRoomName() + "|" + cl.getCapacity() + "|" + assignedCourse);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving classrooms.txt: " + e.getMessage());
+        }
+    }
 
     public void loadUsers() {
         users = loadFromFile("users.txt", User::fromFileString);
@@ -246,6 +297,9 @@ public class DataStore {
     }
     public void loadGrades() {
         grades = loadFromFile("grades.txt", GradeRecord::fromFileString);
+    }
+    public void loadClassrooms() {
+        classrooms = loadFromFile("classrooms.txt", Classroom::fromFileString);
     }
 
     /**
