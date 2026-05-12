@@ -207,7 +207,7 @@ public class UniversityAutomationApp extends JFrame {
         JTextField tfFullName = new JTextField();
         formPanel.add(tfFullName);
 
-        formPanel.add(new JLabel("Reference ID:"));
+        formPanel.add(new JLabel("ID:"));
         JTextField tfRefId = new JTextField();
         formPanel.add(tfRefId);
 
@@ -216,7 +216,7 @@ public class UniversityAutomationApp extends JFrame {
         formPanel.add(addBtn);
 
         // Table
-        String[] columns = {"Username", "Role", "Full Name", "Reference ID"};
+        String[] columns = {"Username", "Role", "Full Name", "ID"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -279,50 +279,38 @@ public class UniversityAutomationApp extends JFrame {
     private void refreshUserTable(DefaultTableModel model) {
         model.setRowCount(0);
         for (User u : dataStore.getUsers()) {
-            model.addRow(new Object[]{u.getUsername(), u.getRole(), u.getFullName(), u.getReferenceId()});
+            model.addRow(new Object[]{u.getUsername(), u.getRole(), u.getFullName(), u.getId()});
         }
     }
 
     public JPanel createStudentsPanel() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
 
-        // GridLayout(6, 2) = exactly 12 cells — no overflow
-        JPanel formPanel = new JPanel(new GridLayout(6, 2, 5, 5));
+        JPanel formPanel = new JPanel(new GridLayout(5, 2, 5, 5));
         formPanel.setBorder(BorderFactory.createTitledBorder("Add Student Profile"));
 
-        // Row 1: Username combo
         formPanel.add(new JLabel("Username (Student):"));
         studentUserCombo = new JComboBox<>();
         refreshRoleCombo(studentUserCombo, "Student");
         formPanel.add(studentUserCombo);
 
-        // Row 2: Full name auto-label (read-only, fetched from User record)
         formPanel.add(new JLabel("Full Name (auto):"));
         JLabel lblFullName = new JLabel("-");
         lblFullName.setFont(lblFullName.getFont().deriveFont(Font.ITALIC));
         formPanel.add(lblFullName);
 
-        // Row 3: Student ID
-        formPanel.add(new JLabel("Student ID:"));
-        JTextField tfStudentId = new JTextField();
-        formPanel.add(tfStudentId);
-
-        // Row 4: Department
         formPanel.add(new JLabel("Department:"));
         JTextField tfDept = new JTextField();
         formPanel.add(tfDept);
 
-        // Row 5: Year
         formPanel.add(new JLabel("Year (1-4):"));
         JTextField tfYear = new JTextField();
         formPanel.add(tfYear);
 
-        // Row 6: Button
         formPanel.add(new JLabel());
         JButton addBtn = new JButton("Add Student Profile");
         formPanel.add(addBtn);
 
-        // Auto-update full name label when combo selection changes
         studentUserCombo.addActionListener(e -> {
             String selected = (String) studentUserCombo.getSelectedItem();
             if (selected != null) {
@@ -332,13 +320,12 @@ public class UniversityAutomationApp extends JFrame {
                 lblFullName.setText("-");
             }
         });
-        // Trigger once for initial selection
         if (studentUserCombo.getItemCount() > 0) {
             User u = dataStore.findUser((String) studentUserCombo.getItemAt(0));
             lblFullName.setText(u != null ? u.getFullName() : "-");
         }
 
-        String[] columns = {"Student ID", "Full Name", "Department", "Year", "Username"};
+        String[] columns = {"ID", "Full Name", "Department", "Year", "Username"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -347,15 +334,13 @@ public class UniversityAutomationApp extends JFrame {
 
         addBtn.addActionListener(e -> {
             String username = (String) studentUserCombo.getSelectedItem();
-            String studentId = tfStudentId.getText().trim();
             String dept = tfDept.getText().trim();
             String yearStr = tfYear.getText().trim();
 
-            if (username == null || !ValidationUtils.allFieldsFilled(studentId, dept, yearStr)) {
+            if (username == null || !ValidationUtils.allFieldsFilled(dept, yearStr)) {
                 showError("All fields are required.");
                 return;
             }
-            // Full name is taken from the User record — no duplicate entry
             User linkedUser = dataStore.findUser(username);
             String fullName = (linkedUser != null) ? linkedUser.getFullName() : username;
 
@@ -367,18 +352,14 @@ public class UniversityAutomationApp extends JFrame {
                 return;
             }
             for (StudentProfile sp : dataStore.getStudents()) {
-                if (sp.getStudentId().equals(studentId)) {
-                    showError("Student ID already exists.");
-                    return;
-                }
                 if (sp.getUsername().equals(username)) {
                     showError("This username already has a student profile.");
                     return;
                 }
             }
-            dataStore.addStudent(new StudentProfile(studentId, fullName, dept, year, username));
+            dataStore.addStudent(new StudentProfile(fullName, dept, year, username));
             refreshStudentTable(model);
-            tfStudentId.setText(""); tfDept.setText(""); tfYear.setText("");
+            tfDept.setText(""); tfYear.setText("");
             JOptionPane.showMessageDialog(this, "Student profile added successfully.");
         });
 
@@ -386,13 +367,13 @@ public class UniversityAutomationApp extends JFrame {
         deleteStudentBtn.addActionListener(e -> {
             int row = table.getSelectedRow();
             if (row < 0) { showError("Please select a student to delete."); return; }
-            String studentId = (String) model.getValueAt(row, 0);
             String fullName  = (String) model.getValueAt(row, 1);
+            String username  = (String) model.getValueAt(row, 4);
             int confirm = JOptionPane.showConfirmDialog(this,
-                "Delete student profile for '" + fullName + "' (ID: " + studentId + ")?",
+                "Delete student profile for '" + fullName + "'?",
                 "Confirm Delete", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                dataStore.removeStudent(studentId);
+                dataStore.removeStudent(username);
                 refreshStudentTable(model);
             }
         });
@@ -425,7 +406,9 @@ public class UniversityAutomationApp extends JFrame {
     private void refreshStudentTable(DefaultTableModel model) {
         model.setRowCount(0);
         for (StudentProfile sp : dataStore.getStudents()) {
-            model.addRow(new Object[]{sp.getStudentId(), sp.getFullName(), sp.getDepartment(), sp.getYear(), sp.getUsername()});
+            User u = dataStore.findUser(sp.getUsername());
+            String id = (u != null) ? u.getId() : "";
+            model.addRow(new Object[]{id, sp.getFullName(), sp.getDepartment(), sp.getYear(), sp.getUsername()});
         }
     }
 

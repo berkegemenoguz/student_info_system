@@ -216,8 +216,8 @@ public class DataStore {
         saveUsers();
     }
 
-    public void removeStudent(String studentId) {
-        students.removeIf(sp -> sp.getStudentId().equals(studentId));
+    public void removeStudent(String username) {
+        students.removeIf(sp -> sp.getUsername().equals(username));
         saveStudents();
     }
 
