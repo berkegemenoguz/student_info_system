@@ -587,6 +587,12 @@ public class UniversityAutomationApp extends JFrame {
 
                 if (selected != null && !selected.equals("(None)")) {
                     String courseCode = selected.split(" - ")[0];
+                    Course course = dataStore.findCourseByCode(courseCode);
+                    Classroom classroom = dataStore.findClassroomById(roomId);
+                    if (course != null && classroom != null && course.getQuota() > classroom.getCapacity()) {
+                        showError("Course quota (" + course.getQuota() + ") exceeds classroom capacity (" + classroom.getCapacity() + ").");
+                        return;
+                    }
                     dataStore.assignClassroomToCourse(courseCode, roomId);
                 }
                 dataStore.saveClassroomAssignments();
