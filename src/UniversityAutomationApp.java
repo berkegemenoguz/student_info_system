@@ -172,6 +172,15 @@ public class UniversityAutomationApp extends JFrame {
                 tabbedPane.addTab("Enroll", createEnrollmentPanel());
                 tabbedPane.addTab("My Courses", createMyCoursesPanel());
                 tabbedPane.addTab("Transcript", createTranscriptPanel());
+                tabbedPane.addChangeListener(e -> {
+                    int idx = tabbedPane.getSelectedIndex();
+                    switch (idx) {
+                        case 0: tabbedPane.setComponentAt(idx, createStudentCoursePanel()); break;
+                        case 1: tabbedPane.setComponentAt(idx, createEnrollmentPanel()); break;
+                        case 2: tabbedPane.setComponentAt(idx, createMyCoursesPanel()); break;
+                        case 3: tabbedPane.setComponentAt(idx, createTranscriptPanel()); break;
+                    }
+                });
                 break;
         }
 
