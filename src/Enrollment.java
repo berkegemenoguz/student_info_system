@@ -1,8 +1,4 @@
-/**
- * Enrollment — Encapsulation & Proper Class Design
- * All fields are private; access is via public getters only.
- * Implements Persistable for consistent file serialization (Method Abstraction).
- */
+/** Bir öğrencinin bir derse kayıt ilişkisini temsil eder (studentUsername ↔ courseCode). */
 public class Enrollment implements Persistable {
     private String studentUsername;
     private String courseCode;
@@ -24,7 +20,7 @@ public class Enrollment implements Persistable {
             String[] parts = line.split("\\|", -1);
             if (parts.length < 2) return null;
             return new Enrollment(parts[0], parts[1]);
-        } catch (Exception e) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }

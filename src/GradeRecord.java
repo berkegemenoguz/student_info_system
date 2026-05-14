@@ -1,9 +1,7 @@
 /**
- * GradeRecord — Encapsulation & Proper Class Design
- * All fields are private; mutable fields (midterm, finalExam) have setters.
- * Business logic (calculateAverage, getLetterGrade) is encapsulated here,
- * not scattered across the UI — demonstrating Method Abstraction.
- * Implements Persistable for consistent file serialization (Reusability).
+ * Bir öğrencinin bir dersteki not kaydı.
+ * Ortalama hesaplaması: vize %40 + final %60.
+ * Harf notu eşikleri: AA(90), BA(85), BB(80), CB(70), CC(60), DC(50), DD(40), FD(30), FF(<30).
  */
 public class GradeRecord implements Persistable {
     private String studentUsername;
@@ -52,7 +50,7 @@ public class GradeRecord implements Persistable {
             String[] parts = line.split("\\|", -1);
             if (parts.length < 4) return null;
             return new GradeRecord(parts[0], parts[1], Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
-        } catch (Exception e) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }

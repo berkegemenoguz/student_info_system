@@ -37,7 +37,7 @@ public class Course implements Persistable {
             if (parts.length < 5) return null;
             String classroomId = parts.length >= 6 ? parts[5] : "";
             return new Course(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), parts[4], classroomId);
-        } catch (Exception e) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }

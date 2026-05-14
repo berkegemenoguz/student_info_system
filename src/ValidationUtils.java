@@ -1,22 +1,14 @@
 /**
- * ValidationUtils — Method Abstraction & Reusability
- *
- * Centralizes all input validation logic so that no panel or class
- * needs to duplicate the same checks. Every validation rule is defined
- * once and reused across Admin, Instructor, and Student panels.
+ * Tüm kullanıcı giriş doğrulama kurallarını tek bir yerde toplar.
+ * Sayısal aralık kontrolleri (not, yıl, kredi) ve metin boşluk kontrolleri burada yapılır.
+ * Hata durumunda IllegalArgumentException fırlatır; çağıran taraf mesajı doğrudan kullanıcıya gösterebilir.
  */
 public class ValidationUtils {
 
-    /** Returns true if the string is null or blank. */
     public static boolean isNullOrEmpty(String s) {
         return s == null || s.trim().isEmpty();
     }
 
-    /**
-     * Checks that none of the provided strings are null or blank.
-     * @param fields varargs of strings to check
-     * @return true if all fields are non-empty
-     */
     public static boolean allFieldsFilled(String... fields) {
         for (String f : fields) {
             if (isNullOrEmpty(f)) return false;
@@ -24,12 +16,7 @@ public class ValidationUtils {
         return true;
     }
 
-    /**
-     * Parses a string as a double score and validates the range [0, 100].
-     * @param s the string to parse
-     * @return the parsed double
-     * @throws IllegalArgumentException if not a number or out of range
-     */
+    /** @throws IllegalArgumentException geçersiz sayı veya [0, 100] aralığı dışındaysa */
     public static double parseScore(String s) {
         double val;
         try {
@@ -43,12 +30,7 @@ public class ValidationUtils {
         return val;
     }
 
-    /**
-     * Parses a string as a positive integer.
-     * @param s the string to parse
-     * @return the parsed int
-     * @throws IllegalArgumentException if not a number or not positive
-     */
+    /** @throws IllegalArgumentException geçersiz sayı veya sıfır/negatifse */
     public static int parsePositiveInt(String s) {
         int val;
         try {
@@ -62,12 +44,7 @@ public class ValidationUtils {
         return val;
     }
 
-    /**
-     * Parses and validates a student year (must be 1–4).
-     * @param s the string to parse
-     * @return the parsed year
-     * @throws IllegalArgumentException if out of range
-     */
+    /** @throws IllegalArgumentException yıl 1–4 aralığında değilse */
     public static int parseYear(String s) {
         int val;
         try {
@@ -81,20 +58,7 @@ public class ValidationUtils {
         return val;
     }
 
-    /**
-     * Returns a formatted GPA string with 2 decimal places.
-     * @param gpa the GPA value
-     * @return formatted string e.g. "3.25"
-     */
-    public static String formatGpa(double gpa) {
-        return String.format("%.2f", gpa);
-    }
-
-    /**
-     * Returns a formatted score string with 1 decimal place.
-     * @param score the score value
-     * @return formatted string e.g. "87.5"
-     */
+    /** Not değerini "87.5" formatında döndürür. */
     public static String formatScore(double score) {
         return String.format("%.1f", score);
     }

@@ -258,7 +258,6 @@ public class DataStore {
 
     // ---- File I/O ----
 
-    // Uses the Persistable-typed saveToFile — Reusability in action
     private static final String DATA_DIR = "data" + File.separator;
 
     public void saveUsers()       { saveToFile(DATA_DIR + "users.txt",       users); }
@@ -268,23 +267,6 @@ public class DataStore {
     public void saveGrades()      { saveToFile(DATA_DIR + "grades.txt",      grades); }
     public void saveClassrooms()  { saveToFile(DATA_DIR + "classrooms.txt",  classrooms); }
 
-    public void saveClassroomAssignments() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_DIR + "classrooms.txt"))) {
-            for (Classroom cl : classrooms) {
-                String assignedCourse = "";
-                for (Course c : courses) {
-                    if (cl.getRoomId().equals(c.getClassroomId())) {
-                        assignedCourse = c.getCourseCode() + " - " + c.getCourseName();
-                        break;
-                    }
-                }
-                writer.write(cl.getRoomId() + "|" + cl.getRoomName() + "|" + cl.getCapacity() + "|" + assignedCourse);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            System.err.println("Error saving classrooms.txt: " + e.getMessage());
-        }
-    }
 
     public void loadUsers() {
         users = loadFromFile(DATA_DIR + "users.txt", User::fromFileString);
@@ -305,12 +287,7 @@ public class DataStore {
         classrooms = loadFromFile(DATA_DIR + "classrooms.txt", Classroom::fromFileString);
     }
 
-    /**
-     * Generic save method — Reusability & Method Abstraction.
-     * Works with ANY Persistable type: User, Course, Enrollment, etc.
-     * The Persistable interface contract guarantees toFileString() exists,
-     * so no type-specific logic is needed here.
-     */
+    /** Herhangi bir Persistable listesini pipe-delimited formatta dosyaya yazar. */
     private <T extends Persistable> void saveToFile(String filename, List<T> list) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             for (T item : list) {

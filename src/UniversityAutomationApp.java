@@ -29,27 +29,12 @@ public class UniversityAutomationApp extends JFrame {
         setVisible(true);
     }
 
-    // ==================== HELPER METHODS — Method Abstraction & Reusability ====================
-
-    /**
-     * Centralized error dialog — avoids repeating JOptionPane boilerplate
-     * across every panel (Reusability principle).
-     */
     private void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Validation Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    /**
-     * Formats a double score to 1 decimal place using ValidationUtils.
-     * Demonstrates Method Abstraction — the caller does not know the format logic.
-     */
-    private String fmt(double score) {
-        return ValidationUtils.formatScore(score);
-    }
-
-    // ==================== LOGIN ====================
-
     public void showLoginPanel() {
+        // Logout sonrası önceki oturum bilgisini temizler
         currentUser = null;
         getContentPane().removeAll();
 
@@ -137,8 +122,6 @@ public class UniversityAutomationApp extends JFrame {
         repaint();
     }
 
-    // ==================== DASHBOARD ====================
-
     public void showDashboard() {
         getContentPane().removeAll();
 
@@ -190,8 +173,6 @@ public class UniversityAutomationApp extends JFrame {
         revalidate();
         repaint();
     }
-
-    // ==================== ADMIN PANELS ====================
 
     public JPanel createUserPanel() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -398,10 +379,7 @@ public class UniversityAutomationApp extends JFrame {
         return panel;
     }
 
-    /**
-     * Generic combo box population — Reusability.
-     * Replaces both refreshStudentUserCombo() and refreshInstructorCombo().
-     */
+    /** Verilen roldeki kullanıcıları combo box'a doldurur. */
     private void refreshRoleCombo(JComboBox<String> combo, String role) {
         if (combo == null) return;
         combo.removeAllItems();
@@ -595,7 +573,6 @@ public class UniversityAutomationApp extends JFrame {
                     }
                     dataStore.assignClassroomToCourse(courseCode, roomId);
                 }
-                dataStore.saveClassroomAssignments();
                 refreshClassroomTable.run();
                 JOptionPane.showMessageDialog(this, "Course assigned successfully.");
             }
@@ -615,7 +592,6 @@ public class UniversityAutomationApp extends JFrame {
                     break;
                 }
             }
-            dataStore.saveClassroomAssignments();
             refreshClassroomTable.run();
             JOptionPane.showMessageDialog(this, "Assignment removed.");
         });
@@ -674,8 +650,8 @@ public class UniversityAutomationApp extends JFrame {
             gradeModel.setRowCount(0);
             for (GradeRecord g : dataStore.getGrades()) {
                 gradeModel.addRow(new Object[]{g.getStudentUsername(), g.getCourseCode(),
-                        String.format("%.1f", g.getMidterm()), String.format("%.1f", g.getFinalExam()),
-                        String.format("%.1f", g.calculateAverage()), g.getLetterGrade()});
+                        ValidationUtils.formatScore(g.getMidterm()), ValidationUtils.formatScore(g.getFinalExam()),
+                        ValidationUtils.formatScore(g.calculateAverage()), g.getLetterGrade()});
             }
         };
         refreshAll.run();
@@ -689,8 +665,6 @@ public class UniversityAutomationApp extends JFrame {
         panel.add(reportTabs, BorderLayout.CENTER);
         return panel;
     }
-
-    // ==================== INSTRUCTOR PANELS ====================
 
     public JPanel createInstructorCoursesPanel() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -784,8 +758,8 @@ public class UniversityAutomationApp extends JFrame {
                 GradeRecord g = dataStore.findGrade(en.getStudentUsername(), courseCode);
                 if (g != null) {
                     model.addRow(new Object[]{en.getStudentUsername(), name,
-                            fmt(g.getMidterm()), fmt(g.getFinalExam()),
-                            fmt(g.calculateAverage()), g.getLetterGrade()});
+                            ValidationUtils.formatScore(g.getMidterm()), ValidationUtils.formatScore(g.getFinalExam()),
+                            ValidationUtils.formatScore(g.calculateAverage()), g.getLetterGrade()});
                 } else {
                     model.addRow(new Object[]{en.getStudentUsername(), name, "-", "-", "-", "-"});
                 }
@@ -820,7 +794,7 @@ public class UniversityAutomationApp extends JFrame {
             }
             double midterm, finalExam;
             try {
-                midterm   = ValidationUtils.parseScore(tfMidterm.getText());  // ValidationUtils — Reusability
+                midterm   = ValidationUtils.parseScore(tfMidterm.getText());
                 finalExam = ValidationUtils.parseScore(tfFinal.getText());
             } catch (IllegalArgumentException ex) {
                 showError("Midterm and final must be numbers between 0 and 100.");
@@ -839,13 +813,11 @@ public class UniversityAutomationApp extends JFrame {
         return panel;
     }
 
-    // ==================== STUDENT PANELS ====================
-
     public JPanel createStudentCoursePanel() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(BorderFactory.createTitledBorder("Available Courses"));
 
-        String[] columns = {"Course Code", "Course Name", "Credit", "AKTS", "Instructor", "Enrolled", "Available"};
+        String[] columns = {"Course Code", "Course Name", "Credit", "Quota", "Instructor", "Enrolled", "Available"};
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -976,8 +948,8 @@ public class UniversityAutomationApp extends JFrame {
                 String courseName = c != null ? c.getCourseName() : g.getCourseCode();
                 int credit = c != null ? c.getCredit() : 0;
                 model.addRow(new Object[]{g.getCourseCode(), courseName, credit,
-                        String.format("%.1f", g.getMidterm()), String.format("%.1f", g.getFinalExam()),
-                        String.format("%.1f", g.calculateAverage()), g.getLetterGrade()});
+                        ValidationUtils.formatScore(g.getMidterm()), ValidationUtils.formatScore(g.getFinalExam()),
+                        ValidationUtils.formatScore(g.calculateAverage()), g.getLetterGrade()});
             }
             double gpa = dataStore.calculateGPA(currentUser.getUsername());
             gpaLabel.setText("  GPA: " + String.format("%.2f", gpa));

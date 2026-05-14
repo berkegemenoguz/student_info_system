@@ -1,8 +1,4 @@
-/**
- * User — Encapsulation & Proper Class Design
- * All fields are private; access is via public getters only.
- * Implements Persistable for consistent file serialization (Method Abstraction).
- */
+/** Sisteme giriş yapabilen kullanıcıyı temsil eder (Admin, Instructor veya Student rolü). */
 public class User implements Persistable {
     private String username;
     private String password;
@@ -33,7 +29,7 @@ public class User implements Persistable {
             String[] parts = line.split("\\|", -1);
             if (parts.length < 5) return null;
             return new User(parts[0], parts[1], parts[2], parts[3], parts[4]);
-        } catch (Exception e) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }

@@ -22,7 +22,7 @@ public class Classroom implements Persistable {
             String[] parts = line.split("\\|", -1);
             if (parts.length < 3) return null;
             return new Classroom(parts[0], parts[1], Integer.parseInt(parts[2]));
-        } catch (Exception e) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }
